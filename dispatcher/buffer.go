@@ -39,13 +39,11 @@ func NewBuffer(template *template.Template, client *elastic.Client) *Buffer {
 
 func (b *Buffer) append(msg document.Document) {
 	b.mutex.Lock()
+	defer b.mutex.Unlock()
 	b.documents = append(b.documents, msg)
 	b.sizeKB += float64(len(msg.Body)) / 1000
 	if b.sizeKB >= b.Template.BufferSizeKB || len(b.documents) >= bufferLimit {
-		b.mutex.Unlock()
 		go b.flush()
-	} else {
-		b.mutex.Unlock()
 	}
 }
 
@@ -82,7 +80,7 @@ func (b *Buffer) Gophers() func() {
 			case <-b.Kill:
 				return
 			case <-ticker.C:
-				b.flush()
+				go b.flush()
 				break
 			case msg := <-b.Append:
 				b.append(msg)

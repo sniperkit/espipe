@@ -79,7 +79,7 @@ func (c *Client) Bulk(requestBody []byte) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("\n%v\n%v\n%v%v\n%v\n", time.Now(), c.bulkEndpoint, bytes.NewBuffer(requestBody).String(), res.Status, bytes.NewBuffer(resBody).String())
+	fmt.Printf("\n%s\n%s\n%s\n%s\n", time.Now(), c.bulkEndpoint, res.Status, bytes.NewBuffer(resBody).String())
 	return nil
 }
 
