@@ -11,7 +11,7 @@ import (
 // Indexer indexes document in bulk request to elasticsearch
 type Indexer struct {
 	config             configuration.Configuration
-	Dispatcher         *dispatcher.Dispatcher
+	dispatcher         *dispatcher.Dispatcher
 	availableTemplates map[template.Name]template.Template
 	availableResources map[template.Name]map[document.Type]bool
 }
@@ -57,6 +57,6 @@ func (i *Indexer) Index(docTemplate template.Name, docType document.Type, docByt
 	if err != nil {
 		return err
 	}
-	i.Dispatcher.Dispatch(document)
+	i.dispatcher.Dispatch(document)
 	return nil
 }
