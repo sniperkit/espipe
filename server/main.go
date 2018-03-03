@@ -1,8 +1,7 @@
-package main
+package server
 
 import (
 	"github.com/khezen/espipe/configuration"
-	"github.com/khezen/espipe/service"
 )
 
 var (
@@ -20,12 +19,12 @@ func main() {
 		}
 	}
 
-	service, err := service.New(config, quit)
+	server, err := New(config, quit)
 	if err != nil {
 		panic(err)
 	}
 
-	go service.ListenAndServe()
+	go server.ListenAndServe()
 	err = <-quit
 	panic(err)
 }

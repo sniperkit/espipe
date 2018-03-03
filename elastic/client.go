@@ -5,13 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	AWSSigner "github.com/aws/aws-sdk-go/aws/signer/v4"
-	"github.com/khezen/espipe/configuration"
-	"github.com/khezen/espipe/httpcli"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	AWSSigner "github.com/aws/aws-sdk-go/aws/signer/v4"
+	"github.com/khezen/espipe/configuration"
+	"github.com/khezen/espipe/httpcli"
+	"github.com/khezen/espipe/template"
 )
 
 var (
@@ -82,7 +84,7 @@ func (c *Client) Bulk(requestBody []byte) error {
 }
 
 // UpsertTemplate creates a template in Elasticsearch
-func (c *Client) UpsertTemplate(t *configuration.Template) error {
+func (c *Client) UpsertTemplate(t *template.Template) error {
 	endpoint := c.renderTemplateURI(t)
 	requestBody, err := json.Marshal(t.Body)
 	if err != nil {
@@ -109,7 +111,7 @@ func (c *Client) UpsertTemplate(t *configuration.Template) error {
 	return nil
 }
 
-func (c *Client) renderTemplateURI(t *configuration.Template) string {
+func (c *Client) renderTemplateURI(t *template.Template) string {
 	bufEndpoint := bytes.NewBufferString(c.templateEndpoint)
 	bufEndpoint.WriteString(string(t.Name))
 	return bufEndpoint.String()

@@ -1,9 +1,11 @@
-package model
+package document
 
 import (
-	"github.com/khezen/espipe/configuration"
 	"io/ioutil"
 	"testing"
+
+	"github.com/khezen/espipe/configuration"
+	"github.com/khezen/espipe/template"
 )
 
 func TestNewDocument(t *testing.T) {
@@ -38,8 +40,8 @@ func TestNewDocument(t *testing.T) {
 	}
 
 	cases := []struct {
-		index     *configuration.Template
-		docType   DocumentType
+		index     *template.Template
+		docType   Type
 		body      []byte
 		expectErr bool
 	}{

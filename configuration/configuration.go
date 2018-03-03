@@ -2,16 +2,17 @@ package configuration
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
+
+	"github.com/khezen/espipe/template"
 )
 
 // Configuration contains all configuration for the logger
 type Configuration struct {
-	Elasticsearch string        `json:"elasticsearch"`
-	Templates     []Template    `json:"templates"`
-	AWSAuth       *AWSAuth      `json:"AWSAuth,omitempty"`
-	BasicAuth     *Crendentials `json:"basicAuth,omitempty"`
+	Elasticsearch string              `json:"elasticsearch"`
+	Templates     []template.Template `json:"templates"`
+	AWSAuth       *AWSAuth            `json:"AWSAuth,omitempty"`
+	BasicAuth     *Crendentials       `json:"basicAuth,omitempty"`
 }
 
 // Crendentials - username & password for HTTP Basic Auth
@@ -25,31 +26,6 @@ type AWSAuth struct {
 	AccessKeyID     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
 	Region          string `json:"region"`
-}
-
-// Template descrbies an elasticsearch Template
-type Template struct {
-	Name         TemplateName `json:"name"`
-	BufferSizeKB float64      `json:"bufferSizeKB"`
-	TimerMS      float64      `json:"timerMS"`
-	Body         interface{}  `json:"body"`
-}
-
-// TemplateName is the name of an Template
-type TemplateName string
-
-// GetTypes return declared for the given Template
-func (Template *Template) GetTypes() ([]string, error) {
-	body := Template.Body.(map[string]interface{})
-	typesMap, ok := body["mappings"].(map[string]interface{})
-	if !ok {
-		return nil, errors.New("Expected map[string]interface{}. Got something else.")
-	}
-	types := make([]string, 0, len(typesMap))
-	for t := range typesMap {
-		types = append(types, t)
-	}
-	return types, nil
 }
 
 // LoadConfig reads the configuration from the config JSON file
