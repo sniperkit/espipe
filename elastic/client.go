@@ -13,6 +13,7 @@ import (
 	AWSSigner "github.com/aws/aws-sdk-go/aws/signer/v4"
 	"github.com/khezen/espipe/configuration"
 	"github.com/khezen/espipe/httpcli"
+	"github.com/khezen/espipe/template"
 )
 
 var (
@@ -31,12 +32,8 @@ type Client struct {
 
 // NewClient returns a client for Elasticsearch API
 func NewClient(config *configuration.Configuration) *Client {
-
-	bufBulkEndP := bytes.NewBufferString(config.Elasticsearch)
-	bufBulkEndP.WriteString("/_bulk")
-	bufCreateTemplateEndP := bytes.NewBufferString(config.Elasticsearch)
-	bufCreateTemplateEndP.WriteString("/_template/")
-
+	bulkEndpoint := fmt.Sprintf("%s/_bulk", config.Elasticsearch)
+	createTemplateEndpoint := fmt.Sprintf("%s/_template", config.Elasticsearch)
 	var AWSSigner *AWSSigner.Signer
 	var basicAuthSigner *BasicAuthSigner
 	switch {
@@ -47,13 +44,12 @@ func NewClient(config *configuration.Configuration) *Client {
 		basicAuthSigner = NewBasicAuthSigner(config.BasicAuth.Username, config.BasicAuth.Password)
 		break
 	}
-
 	return &Client{
 		config,
 		AWSSigner,
 		basicAuthSigner,
-		bufBulkEndP.String(),
-		bufCreateTemplateEndP.String(),
+		bulkEndpoint,
+		createTemplateEndpoint,
 	}
 }
 
@@ -83,8 +79,8 @@ func (c *Client) Bulk(requestBody []byte) error {
 }
 
 // UpsertTemplate creates a template in Elasticsearch
-func (c *Client) UpsertTemplate(t *configuration.Template) error {
-	endpoint := c.renderTemplateURI(t)
+func (c *Client) UpsertTemplate(t *template.Template) error {
+	endpoint := fmt.Sprintf("%s/%s", c.templateEndpoint, t.Name)
 	requestBody, err := json.Marshal(t.Body)
 	if err != nil {
 		return err
@@ -108,12 +104,6 @@ func (c *Client) UpsertTemplate(t *configuration.Template) error {
 		return ErrNotAcknowledged
 	}
 	return nil
-}
-
-func (c *Client) renderTemplateURI(t *configuration.Template) string {
-	bufEndpoint := bytes.NewBufferString(c.templateEndpoint)
-	bufEndpoint.WriteString(string(t.Name))
-	return bufEndpoint.String()
 }
 
 func (c *Client) sign(req *http.Request, bodyReader io.ReadSeeker) error {

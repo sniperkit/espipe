@@ -1,4 +1,4 @@
-package service
+package server
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/khezen/espipe/errors"
 )
 
-func (s *Service) serveError(w http.ResponseWriter, r *http.Request, err error) {
+func (s *Server) serveError(w http.ResponseWriter, r *http.Request, err error) {
 	w.Header().Set("Connection", "close")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	switch err {

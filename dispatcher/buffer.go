@@ -5,19 +5,19 @@ import (
 	"sync"
 	"time"
 
-	configuration "github.com/khezen/espipe/configuration"
-	elastic "github.com/khezen/espipe/elastic"
-	model "github.com/khezen/espipe/model"
+	"github.com/khezen/espipe/document"
+	"github.com/khezen/espipe/elastic"
+	"github.com/khezen/espipe/template"
 )
 
 // Buffer is related to a template
 // It sends messages in bulk to elasticsearch.
 type Buffer struct {
-	Template  *configuration.Template
+	Template  *template.Template
 	client    *elastic.Client
-	Append    chan model.Document
+	Append    chan document.Document
 	Kill      chan error
-	documents []model.Document
+	documents []document.Document
 	sizeKB    float64
 	mutex     sync.RWMutex
 }
@@ -25,19 +25,19 @@ type Buffer struct {
 const bufferLimit = 1000
 
 // NewBuffer creates a new buffer
-func NewBuffer(template *configuration.Template, client *elastic.Client) *Buffer {
+func NewBuffer(template *template.Template, client *elastic.Client) *Buffer {
 	return &Buffer{
 		template,
 		client,
-		make(chan model.Document),
+		make(chan document.Document),
 		make(chan error),
-		make([]model.Document, 0),
+		make([]document.Document, 0),
 		0,
 		sync.RWMutex{},
 	}
 }
 
-func (b *Buffer) append(msg model.Document) {
+func (b *Buffer) append(msg document.Document) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 	b.documents = append(b.documents, msg)
@@ -67,7 +67,7 @@ func (b *Buffer) flush() {
 		fmt.Println(err.Error())
 		return
 	}
-	b.documents = make([]model.Document, 0, bufferLimit)
+	b.documents = make([]document.Document, 0, bufferLimit)
 	b.sizeKB = 0
 }
 

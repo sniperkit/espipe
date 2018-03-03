@@ -2,6 +2,8 @@ package configuration
 
 import (
 	"testing"
+
+	"github.com/khezen/espipe/template"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -36,7 +38,7 @@ func TestGetTypes(t *testing.T) {
 		panic(err)
 	}
 	cases := []struct {
-		template      *Template
+		template      *template.Template
 		expectedTypes []string
 		expectErr     bool
 	}{
