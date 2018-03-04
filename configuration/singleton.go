@@ -29,8 +29,9 @@ func Get() (config *Configuration, err error) {
 		if err != nil {
 			return nil, err
 		}
+		setSingleton(config)
 	}
-	return config, nil
+	return getSingleton(), nil
 }
 
 func loadConfig(configFile string) (*Configuration, error) {
@@ -44,7 +45,6 @@ func loadConfig(configFile string) (*Configuration, error) {
 	if err != nil {
 		return nil, err
 	}
-	singleton = &config
 	return &config, nil
 }
 
