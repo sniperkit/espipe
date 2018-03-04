@@ -18,7 +18,8 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		_, err := LoadConfig(c.filePath)
+		Set(c.filePath)
+		_, err := Get()
 		switch {
 		case c.expectErr && err == nil:
 			t.Error("Expected error got nil")
@@ -29,11 +30,13 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestGetTypes(t *testing.T) {
-	config, err := LoadConfig("testValidConfig.json")
+	Set("testValidConfig.json")
+	config, err := Get()
 	if err != nil {
 		panic(err)
 	}
-	wrongMappingsConf, err := LoadConfig("testMappingCastFail.json")
+	Set("testMappingCastFail.json")
+	wrongMappingsConf, err := Get()
 	if err != nil {
 		panic(err)
 	}

@@ -9,11 +9,11 @@ type Configuration struct {
 	Elasticsearch string              `json:"elasticsearch"`
 	Templates     []template.Template `json:"templates"`
 	AWSAuth       *AWSAuth            `json:"AWSAuth,omitempty"`
-	BasicAuth     *Crendentials       `json:"basicAuth,omitempty"`
+	BasicAuth     *BasicAuth          `json:"basicAuth,omitempty"`
 }
 
-// Crendentials - username & password for HTTP Basic Auth
-type Crendentials struct {
+// BasicAuth - username & password for HTTP Basic Auth
+type BasicAuth struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }

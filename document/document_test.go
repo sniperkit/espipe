@@ -9,7 +9,8 @@ import (
 )
 
 func TestNewDocument(t *testing.T) {
-	config, err := configuration.LoadConfig("../configuration/testValidConfig.json")
+	configuration.Set("../configuration/testValidConfig.json")
+	config, err := configuration.Get()
 	logTemplate := &config.Templates[0]
 	if err != nil {
 		panic(err)

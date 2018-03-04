@@ -7,25 +7,36 @@ import (
 )
 
 var singleton *Configuration
+var singRWMut = sync.RWMutex{}
 var path = "/etc/espipe/config.json"
-var rwMutex = sync.RWMutex{}
+var pathRWMut = sync.RWMutex{}
 
 func setSingleton(config *Configuration) {
-	rwMutex.Lock()
-	defer rwMutex.Unlock()
+	singRWMut.Lock()
+	defer singRWMut.Unlock()
 	singleton = config
 }
 
 func getSingleton() *Configuration {
-	rwMutex.RLock()
-	defer rwMutex.RUnlock()
+	singRWMut.RLock()
+	defer singRWMut.RUnlock()
 	return singleton
+}
+
+// Set the config
+func Set(configPath string) {
+	pathRWMut.Lock()
+	defer pathRWMut.Unlock()
+	setSingleton(nil)
+	path = configPath
 }
 
 // Get the config
 func Get() (config *Configuration, err error) {
 	config = getSingleton()
 	if config == nil {
+		pathRWMut.RLock()
+		defer pathRWMut.RUnlock()
 		config, err = loadConfig(path)
 		if err != nil {
 			config, err = loadConfig("config.json")
