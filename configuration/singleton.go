@@ -17,7 +17,7 @@ func setSingleton(config *Configuration) {
 	singleton = config
 }
 
-func getSingleton() *Configuration {
+func getGet() *Configuration {
 	singRWMut.RLock()
 	defer singRWMut.RUnlock()
 	return singleton
@@ -33,7 +33,7 @@ func Set(configPath string) {
 
 // Get the config
 func Get() (config *Configuration, err error) {
-	config = getSingleton()
+	config = getGet()
 	if config == nil {
 		pathRWMut.RLock()
 		defer pathRWMut.RUnlock()

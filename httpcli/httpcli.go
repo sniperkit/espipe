@@ -17,6 +17,6 @@ var (
 )
 
 // Singleton return the shared httpClient
-func Singleton() *http.Client {
+func Get() *http.Client {
 	return singleton
 }
