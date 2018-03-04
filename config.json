@@ -1,6 +1,6 @@
 {
   "redis": {
-    "enabled": true,
+    "enabled": false,
     "addr": "localhost:6379",
     "password": "changeme"
   },

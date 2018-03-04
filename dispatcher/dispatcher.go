@@ -13,7 +13,7 @@ import (
 type Dispatcher struct {
 	Client  *elastic.Client
 	buffers map[template.Name]Buffer
-	relieve chan Buffer
+	config  configuration.Configuration
 	mutex   sync.RWMutex
 }
 
@@ -24,7 +24,7 @@ func NewDispatcher(config *configuration.Configuration) (*Dispatcher, error) {
 	return &Dispatcher{
 		client,
 		buffers,
-		make(chan Buffer),
+		*config,
 		sync.RWMutex{},
 	}, nil
 }
@@ -39,7 +39,12 @@ func (d *Dispatcher) Dispatch(document *document.Document) {
 
 func (d *Dispatcher) ensureBuffer(document *document.Document) {
 	if _, ok := d.buffers[document.Template.Name]; !ok {
-		buffer := DefaultBuffer(document.Template, d.Client)
+		var buffer Buffer
+		if d.config.Redis.Enabled {
+			buffer = RedisBuffer(document.Template, &d.config)
+		} else {
+			buffer = DefaultBuffer(document.Template, d.Client)
+		}
 		go buffer.Flusher()()
 		d.buffers[document.Template.Name] = buffer
 	}

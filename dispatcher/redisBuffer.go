@@ -22,8 +22,8 @@ type redisBuffer struct {
 	mutex     sync.RWMutex
 }
 
-// NewRedisBuffer -
-func NewRedisBuffer(template *template.Template, config *configuration.Configuration) Buffer {
+// RedisBuffer -
+func RedisBuffer(template *template.Template, config *configuration.Configuration) Buffer {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     config.Redis.Address,
 		Password: config.Redis.Password,
