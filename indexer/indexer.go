@@ -10,10 +10,10 @@ import (
 
 // Indexer indexes document in bulk request to elasticsearch
 type Indexer struct {
-	config             configuration.Configuration
-	dispatcher         *dispatcher.Dispatcher
-	availableTemplates map[template.Name]template.Template
-	availableResources map[template.Name]map[document.Type]bool
+	config     configuration.Configuration
+	templates  map[template.Name]template.Template
+	types      map[template.Name]map[document.Type]bool
+	dispatcher *dispatcher.Dispatcher
 }
 
 // New - Create new service for serving web REST requests
@@ -22,34 +22,34 @@ func New(config configuration.Configuration) (*Indexer, error) {
 	if err != nil {
 		return nil, err
 	}
-	availableTemplates := make(map[template.Name]template.Template)
-	availableResources := make(map[template.Name]map[document.Type]bool)
+	templates := make(map[template.Name]template.Template)
+	types := make(map[template.Name]map[document.Type]bool)
 	for _, template := range config.Templates {
-		availableTemplates[template.Name] = template
-		availableResources[template.Name] = make(map[document.Type]bool)
-		types, err := template.GetTypes()
+		templates[template.Name] = template
+		types[template.Name] = make(map[document.Type]bool)
+		templateTypes, err := template.GetTypes()
 		if err != nil {
 			return nil, err
 		}
-		for _, t := range types {
-			availableResources[template.Name][document.Type(t)] = true
+		for _, t := range templateTypes {
+			types[template.Name][document.Type(t)] = true
 		}
 	}
 	return &Indexer{
 		config,
+		templates,
+		types,
 		d,
-		availableTemplates,
-		availableResources,
 	}, nil
 }
 
 // Index document
 func (i *Indexer) Index(docTemplate template.Name, docType document.Type, docBytes []byte) error {
-	template, ok := i.availableTemplates[docTemplate]
+	template, ok := i.templates[docTemplate]
 	if !ok {
 		return errors.ErrPathNotFound
 	}
-	if _, ok := i.availableResources[template.Name][docType]; !ok {
+	if _, ok := i.types[template.Name][docType]; !ok {
 		return errors.ErrPathNotFound
 	}
 	// NO ERRORS -> DISPATCH

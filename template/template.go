@@ -14,15 +14,15 @@ type Template struct {
 type Name string
 
 // GetTypes return declared for the given Template
-func (Template *Template) GetTypes() ([]string, error) {
+func (Template *Template) GetTypes() ([]Name, error) {
 	body := Template.Body.(map[string]interface{})
 	typesMap, ok := body["mappings"].(map[string]interface{})
 	if !ok {
-		return nil, errors.New("Expected map[string]interface{}. Got something else.")
+		return nil, errors.New("ErrUnexpectedCast - correct is map[string]interface{}")
 	}
-	types := make([]string, 0, len(typesMap))
+	types := make([]Name, 0, len(typesMap))
 	for t := range typesMap {
-		types = append(types, t)
+		types = append(types, Name(t))
 	}
 	return types, nil
 }
