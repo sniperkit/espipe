@@ -33,9 +33,10 @@ GET /espipe/health | 200 OK | healthcheck
 Redis is disabled by default in which case buffer is stored in memory.
 ```json
   "redis": {
+    "enabled": true,
     "address":"http://localhost:6379",
     "password": "changeme",
-    "enabled": true,
+    "parition":0
   }
 ```
 

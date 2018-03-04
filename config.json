@@ -2,7 +2,8 @@
   "redis": {
     "enabled": false,
     "addr": "localhost:6379",
-    "password": "changeme"
+    "password": "changeme",
+    "partition": 0
   },
   "elasticsearch": {
     "addr":"http://localhost:9200",

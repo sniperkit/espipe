@@ -27,6 +27,7 @@ func RedisBuffer(template *template.Template, config *configuration.Configuratio
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     config.Redis.Address,
 		Password: config.Redis.Password,
+		DB:       config.Redis.Partition,
 	})
 	elasticClient := elastic.NewClient(config)
 	buffer := &redisBuffer{

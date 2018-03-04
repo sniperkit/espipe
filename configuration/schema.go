@@ -11,10 +11,10 @@ type Configuration struct {
 }
 
 type Redis struct {
-	Enabled  bool   `json:"enabled"`
-	Address  string `json:"address"`
-	Password string `json:"password"`
-	Database int    `json:"database"`
+	Enabled   bool   `json:"enabled"`
+	Address   string `json:"address"`
+	Password  string `json:"password"`
+	Partition int    `json:"partition"`
 }
 
 type Elasticsearch struct {
