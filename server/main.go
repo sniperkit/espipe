@@ -16,6 +16,7 @@ func main() {
 		configuration.Set("config.json")
 		config, err = configuration.Get()
 	}
+	config.Redis.AutoFlush = true
 	server, err := New(*config, quit)
 	if err != nil {
 		panic(err)

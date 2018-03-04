@@ -15,6 +15,7 @@ type Redis struct {
 	Address   string `json:"address"`
 	Password  string `json:"password"`
 	Partition int    `json:"partition"`
+	AutoFlush bool
 }
 
 type Elasticsearch struct {

@@ -24,6 +24,7 @@ func IndexHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxy
 		err := fmt.Errorf("serverless mode require Redis to be enabled")
 		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: errors.HTTPStatusCode(err)}, err
 	}
+	config.Redis.AutoFlush = false
 	indexer, err := indexer.New(*config)
 	if err != nil {
 		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: errors.HTTPStatusCode(err)}, err

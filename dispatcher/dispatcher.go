@@ -45,7 +45,9 @@ func (d *Dispatcher) ensureBuffer(document *document.Document) {
 		} else {
 			buffer = DefaultBuffer(document.Template, d.Client)
 		}
-		go buffer.Flusher()()
+		if d.config.Redis.AutoFlush {
+			go buffer.Flusher()()
+		}
 		d.buffers[document.Template.Name] = buffer
 	}
 }
