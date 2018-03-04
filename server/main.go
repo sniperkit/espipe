@@ -10,7 +10,12 @@ var (
 
 func main() {
 	quit := make(chan error)
+	var err error
 	config, err := configuration.Get()
+	if config == nil {
+		configuration.Set("config.json")
+		config, err = configuration.Get()
+	}
 	server, err := New(*config, quit)
 	if err != nil {
 		panic(err)

@@ -39,10 +39,7 @@ func Get() (config *Configuration, err error) {
 		defer pathRWMut.RUnlock()
 		config, err = loadConfig(path)
 		if err != nil {
-			config, err = loadConfig("config.json")
-			if err != nil {
-				return nil, err
-			}
+			return nil, err
 		}
 	}
 	return config, nil
