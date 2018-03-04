@@ -48,7 +48,7 @@ func (b *redisBuffer) Append(msg document.Document) error {
 	if err != nil {
 		return err
 	}
-	res := b.redis.Append(key, string(request))
+	res := b.redis.LPush(key, string(request))
 	err = res.Err()
 	if err != nil {
 		return err
@@ -63,10 +63,19 @@ func (b *redisBuffer) Flush() error {
 		return err
 	}
 	bulk := make([]byte, 0, int(b.sizeKB)+len(b.documents)*150)
+	tx := b.redis.TxPipeline()
+	defer func() {
+		if err != nil {
+			tx.Discard()
+		} else {
+			tx.Exec()
+		}
+	}()
 	for _, key := range keys {
-		res := b.redis.Get(key)
-		if res.Err() != nil {
-			return res.Err()
+		res := tx.Get(key)
+		err = res.Err()
+		if err != nil {
+			return err
 		}
 		requests := res.String()
 		bulk = append(bulk, []byte(requests)...)
@@ -76,7 +85,7 @@ func (b *redisBuffer) Flush() error {
 		return err
 	}
 	for _, key := range keys {
-		delRes := b.redis.Del(key)
+		delRes := tx.Del(key)
 		err = delRes.Err()
 		if err != nil {
 			return err
