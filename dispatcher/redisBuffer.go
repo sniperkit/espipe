@@ -63,15 +63,12 @@ func (b *redisBuffer) Flush() error {
 	}
 	bulk := make([]byte, 0, int(b.sizeKB)+len(b.documents)*150)
 	for _, key := range keys {
-		var requests []string
 		res := b.redis.Get(key)
-		err = res.Scan(&requests)
-		if err != nil {
-			return err
+		if res.Err() != nil {
+			return res.Err()
 		}
-		for _, req := range requests {
-			bulk = append(bulk, []byte(req)...)
-		}
+		requests := res.String()
+		bulk = append(bulk, []byte(requests)...)
 	}
 	err = b.elastic.Bulk(bulk)
 	if err != nil {
