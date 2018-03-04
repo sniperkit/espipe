@@ -16,7 +16,7 @@ var (
 	}
 )
 
-// HTTP return the http client
-func HTTP() *http.Client {
+// HTTPClient return the http client
+func HTTPClient() *http.Client {
 	return httpClient
 }

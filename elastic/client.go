@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	httpClient = transport.HTTP()
+	httpClient = transport.HTTPClient()
 	// ErrNotAcknowledged - creation request has been sent but not acknowledged by elasticsearh
 	ErrNotAcknowledged = errors.New("ErrNotAcknowledged - creation request has been sent but not acknowledged by elasticsearh")
 )
