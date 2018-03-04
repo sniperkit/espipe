@@ -15,6 +15,7 @@ import (
 
 // IndexHandler index doument in bulk request to elastic search
 func IndexHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	configuration.Set("etc/config.json")
 	config, err := configuration.Get()
 	if err != nil {
 		return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: errors.HTTPStatusCode(err)}, err

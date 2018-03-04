@@ -10,6 +10,7 @@ package:
    - ./**
  include:
    - ./bin/**
+   - ./etc/**
 
 functions:
   index:
