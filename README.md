@@ -19,7 +19,7 @@ Request|Response|Description
 POST /espipe/{template.name}/{documentType}  JSON body | 200 OK | indexes JSON body as `{documentType}` in Elasticsearch `{template.name}-yyyy.MM.dd`
 GET /espipe/health | 200 OK | healthcheck
 
-# Configure
+# Config
 ```json
 {
     "elasticsearch": "http://localhost:9200",
@@ -33,7 +33,7 @@ GET /espipe/health | 200 OK | healthcheck
 }
 
 ```
-## Configure templates
+## templates
 
 * templates is an array of template configurations:
   * *espipe* creates templates in elasticsearch if they do not exist yet
@@ -54,9 +54,7 @@ See the [Create Template API documentation](https://www.elastic.co/guide/en/elas
 
 The mapping itself is flexible and is schema-free. New fields are automatically added to the type mapping definition when *espipe* indexes a new document. Check out the [mapping section](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) for more information on mapping definitions.
 
-## Security
-
-### AWS Sign
+## AWS Sign
 
 *espipe* supports AWS authentication for Amazon Elasticsearch Service
 ```json
@@ -71,7 +69,7 @@ The mapping itself is flexible and is schema-free. New fields are automatically 
 }
 ```
 
-### Basic Auth
+## Basic Auth
 
 *espipe* supports basic authentication for Elasticsearch (shield, search-guard)
 

@@ -24,7 +24,7 @@ func New(config configuration.Configuration) (*Indexer, error) {
 	}
 	templates := make(map[template.Name]template.Template)
 	types := make(map[template.Name]map[document.Type]bool)
-	for _, template := range config.Templates {
+	for _, template := range config.Elasticsearch.Templates {
 		templates[template.Name] = template
 		types[template.Name] = make(map[document.Type]bool)
 		templateTypes, err := template.GetTypes()

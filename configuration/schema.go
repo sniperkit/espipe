@@ -6,10 +6,22 @@ import (
 
 // Configuration contains all configuration for the logger
 type Configuration struct {
-	Elasticsearch string              `json:"elasticsearch"`
-	Templates     []template.Template `json:"templates"`
-	AWSAuth       *AWSAuth            `json:"AWSAuth,omitempty"`
-	BasicAuth     *BasicAuth          `json:"basicAuth,omitempty"`
+	Redis         Redis         `json:"redis"`
+	Elasticsearch Elasticsearch `json:"elasticsearch"`
+}
+
+type Redis struct {
+	Enabled  bool   `json:"enabled"`
+	Address  string `json:"address"`
+	Password string `json:"password"`
+	Database int    `json:"database"`
+}
+
+type Elasticsearch struct {
+	Address   string              `json:"addr"`
+	Templates []template.Template `json:"templates"`
+	AWSAuth   *AWSAuth            `json:"AWSAuth,omitempty"`
+	BasicAuth *BasicAuth          `json:"basicAuth,omitempty"`
 }
 
 // BasicAuth - username & password for HTTP Basic Auth

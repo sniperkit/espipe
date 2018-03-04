@@ -31,16 +31,16 @@ type Client struct {
 
 // NewClient returns a client for Elasticsearch API
 func NewClient(config *configuration.Configuration) *Client {
-	bulkEndpoint := fmt.Sprintf("%s/_bulk", config.Elasticsearch)
-	createTemplateEndpoint := fmt.Sprintf("%s/_template", config.Elasticsearch)
+	bulkEndpoint := fmt.Sprintf("%s/_bulk", config.Elasticsearch.Address)
+	createTemplateEndpoint := fmt.Sprintf("%s/_template", config.Elasticsearch.Address)
 	var AWSSigner *AWSSigner.Signer
 	var basicAuthSigner *BasicAuthSigner
 	switch {
-	case config.AWSAuth != nil:
-		AWSSigner = NewAWSSigner(config.AWSAuth.AccessKeyID, config.AWSAuth.SecretAccessKey)
+	case config.Elasticsearch.AWSAuth != nil:
+		AWSSigner = NewAWSSigner(config.Elasticsearch.AWSAuth.AccessKeyID, config.Elasticsearch.AWSAuth.SecretAccessKey)
 		break
-	case config.BasicAuth != nil:
-		basicAuthSigner = NewBasicAuthSigner(config.BasicAuth.Username, config.BasicAuth.Password)
+	case config.Elasticsearch.BasicAuth != nil:
+		basicAuthSigner = NewBasicAuthSigner(config.Elasticsearch.BasicAuth.Username, config.Elasticsearch.BasicAuth.Password)
 		break
 	}
 	return &Client{
@@ -103,7 +103,7 @@ func (c *Client) sign(req *http.Request, bodyReader io.ReadSeeker) error {
 	var err error
 	switch {
 	case c.AWSSigner != nil:
-		_, err = c.AWSSigner.Sign(req, bodyReader, "es", c.config.AWSAuth.Region, time.Now())
+		_, err = c.AWSSigner.Sign(req, bodyReader, "es", c.config.Elasticsearch.AWSAuth.Region, time.Now())
 		break
 	case c.BasicAuthSigner != nil:
 		_, err = c.BasicAuthSigner.Sign(req)
