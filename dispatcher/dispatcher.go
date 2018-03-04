@@ -34,7 +34,7 @@ func (d *Dispatcher) Dispatch(document *document.Document) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	d.ensureBuffer(document)
-	d.buffers[document.Template.Name].Append(*document)
+	go d.buffers[document.Template.Name].Append(*document)
 }
 
 func (d *Dispatcher) ensureBuffer(document *document.Document) {
