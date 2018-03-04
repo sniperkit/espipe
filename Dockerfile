@@ -1,6 +1,6 @@
 FROM golang:1.10.0-alpine3.7 as build
 COPY ./ /tmp/app
-# important files persistence
+# save files
 RUN mkdir /default \
 &&  cp /tmp/app/config.json /default/config.json \
 && mv /tmp/app/entrypoint.sh /entrypoint.sh \

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -65,16 +64,10 @@ func (c *Client) Bulk(requestBody []byte) error {
 	if err != nil {
 		return err
 	}
-	res, err := httpClient.Do(req)
+	_, err = httpClient.Do(req)
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
-	resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("\n%s\n%s\n%s\n%s\n", time.Now(), c.bulkEndpoint, res.Status, bytes.NewBuffer(resBody).String())
 	return nil
 }
 
