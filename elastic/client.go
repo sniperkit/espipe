@@ -11,12 +11,12 @@ import (
 
 	AWSSigner "github.com/aws/aws-sdk-go/aws/signer/v4"
 	"github.com/khezen/espipe/configuration"
-	"github.com/khezen/espipe/httpcli"
 	"github.com/khezen/espipe/template"
+	"github.com/khezen/espipe/transport"
 )
 
 var (
-	httpClient = httpcli.Get()
+	httpClient = transport.HTTP()
 	// ErrNotAcknowledged - creation request has been sent but not acknowledged by elasticsearh
 	ErrNotAcknowledged = errors.New("ErrNotAcknowledged - creation request has been sent but not acknowledged by elasticsearh")
 )
