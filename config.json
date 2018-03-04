@@ -8,8 +8,7 @@
     "addr":"http://localhost:9200",
     "templates": [{
         "name": "logs",
-        "bufferSizeKB": 5000,
-        "timerMS": 5000,
+        "flushPeriodMS": 5000,
         "body": {
           "template": "logs-*",
           "settings": {
@@ -38,8 +37,7 @@
       },
       {
         "name": "web",
-        "bufferSizeKB": 5000,
-        "timerMS": 5000,
+        "flushPeriodMS": 5000,
         "body": {
           "template": "web-*",
           "settings": {

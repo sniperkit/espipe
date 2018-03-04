@@ -17,7 +17,6 @@ type buffer struct {
 	client    *elastic.Client
 	Kill      chan error
 	documents []document.Document
-	sizeKB    float64
 	mutex     sync.RWMutex
 }
 
@@ -28,7 +27,6 @@ func DefaultBuffer(template *template.Template, client *elastic.Client) Buffer {
 		client,
 		make(chan error),
 		make([]document.Document, 0),
-		0,
 		sync.RWMutex{},
 	}
 	return buffer
@@ -39,10 +37,6 @@ func (b *buffer) Append(msg document.Document) error {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 	b.documents = append(b.documents, msg)
-	b.sizeKB += float64(len(msg.Body)) / 1000
-	if b.sizeKB >= b.Template.BufferSizeKB || len(b.documents) >= bufferLimit {
-		go b.Flush()
-	}
 	return nil
 }
 
@@ -53,7 +47,7 @@ func (b *buffer) Flush() error {
 	if len(b.documents) == 0 {
 		return nil
 	}
-	bulk := make([]byte, 0, int(b.sizeKB)+len(b.documents)*150)
+	bulk := make([]byte, 0, 5000000)
 	for _, doc := range b.documents {
 		req, err := doc.Request()
 		if err != nil {
@@ -66,13 +60,12 @@ func (b *buffer) Flush() error {
 		return err
 	}
 	b.documents = make([]document.Document, 0, bufferLimit)
-	b.sizeKB = 0
 	return nil
 }
 
 // Flusher flushes every {configuration/config.go::Template.TimerMS}
 func (b *buffer) Flusher() func() {
-	ticker := time.NewTicker(time.Duration(b.Template.TimerMS) * time.Millisecond)
+	ticker := time.NewTicker(time.Duration(b.Template.FlushPeriodMS) * time.Millisecond)
 	return func() {
 		for {
 			select {

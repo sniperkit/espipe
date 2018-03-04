@@ -89,7 +89,7 @@ func (b *redisBuffer) Flush() error {
 
 // Flusher flushes every {configuration/config.go::Template.TimerMS}
 func (b *redisBuffer) Flusher() func() {
-	ticker := time.NewTicker(time.Duration(b.Template.TimerMS) * time.Millisecond)
+	ticker := time.NewTicker(time.Duration(b.Template.FlushPeriodMS) * time.Millisecond)
 	return func() {
 		for {
 			select {

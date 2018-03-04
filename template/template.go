@@ -4,10 +4,9 @@ import "errors"
 
 // Template descrbies an elasticsearch Template
 type Template struct {
-	Name         Name        `json:"name"`
-	BufferSizeKB float64     `json:"bufferSizeKB"`
-	TimerMS      float64     `json:"timerMS"`
-	Body         interface{} `json:"body"`
+	Name          Name        `json:"name"`
+	FlushPeriodMS float64     `json:"flushPeriodMS"`
+	Body          interface{} `json:"body"`
 }
 
 // Name is the name of an Template
