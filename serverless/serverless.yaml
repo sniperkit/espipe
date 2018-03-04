@@ -19,3 +19,7 @@ functions:
       - http:
           path: espipe
           method: post
+  flush:
+    handler: bin/flush
+    events:
+      - schedule: rate(5 seconds)
