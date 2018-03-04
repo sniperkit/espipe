@@ -1,9 +1,6 @@
 package configuration
 
 import (
-	"encoding/json"
-	"io/ioutil"
-
 	"github.com/khezen/espipe/template"
 )
 
@@ -26,22 +23,4 @@ type AWSAuth struct {
 	AccessKeyID     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
 	Region          string `json:"region"`
-}
-
-// LoadConfig reads the configuration from the config JSON file
-func LoadConfig(configFile string) (Configuration, error) {
-
-	// Load config file
-	bytes, err := ioutil.ReadFile(configFile)
-	if err != nil {
-		return Configuration{}, err
-	}
-
-	var config Configuration
-	err = json.Unmarshal(bytes, &config)
-	if err != nil {
-		return Configuration{}, err
-	}
-
-	return config, nil
 }

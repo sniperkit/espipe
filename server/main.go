@@ -10,20 +10,11 @@ var (
 
 func main() {
 	quit := make(chan error)
-
-	config, err := configuration.LoadConfig(configFile)
-	if err != nil {
-		config, err = configuration.LoadConfig("config.json")
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	server, err := New(config, quit)
+	config, err := configuration.Get()
+	server, err := New(*config, quit)
 	if err != nil {
 		panic(err)
 	}
-
 	go server.ListenAndServe()
 	err = <-quit
 	panic(err)
