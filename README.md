@@ -8,12 +8,14 @@
 
 
 # Run
+
+## Docker
 `docker run -p 5000:5000 -v /etc/espipe:/etc/espipe khezen/espipe:6`
-## Supported tags and respective `Dockerfile` links
+### Supported tags and respective `Dockerfile` links
 * `6`, `latest`
  [(6/Dockerfile)](https://github.com/khezen/espipe/blob/6/Dockerfile)[![](https://images.microbadger.com/badges/image/khezen/espipe.svg)](https://hub.docker.com/r/khezen/espipe/)
-# Services
 
+# API
 Request|Response|Description
 ---|---|---
 POST /espipe/{templateName}/{documentType}  JSON body | 200 OK | indexes JSON body as `{documentType}` in Elasticsearch `{template.name}-yyyy.MM.dd`
