@@ -1,85 +1,91 @@
 {
-  "elasticsearch": "http://localhost:9200",
-  "templates": [{
-      "name": "logs",
-      "bufferSizeKB": 5000,
-      "timerMS": 5000,
-      "body": {
-        "template": "logs-*",
-        "settings": {
-          "number_of_shards": 1,
-          "number_of_replicas": 0
-        },
-        "mappings": {
-          "log": {
-            "properties": {
-              "service": {
-                "type": "keyword"
-              },
-              "level": {
-                "type": "keyword"
-              },
-              "message": {
-                "type": "text"
-              },
-              "request_id": {
-                "type": "keyword"
+  "redis": {
+    "enabled": false,
+    "addr": "localhost:6379",
+    "password": "changeme",
+    "partition": 0
+  },
+  "elasticsearch": {
+    "addr":"http://localhost:9200",
+    "templates": [{
+        "name": "logs",
+        "flushPeriodMS": 5000,
+        "body": {
+          "template": "logs-*",
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0
+          },
+          "mappings": {
+            "log": {
+              "properties": {
+                "service": {
+                  "type": "keyword"
+                },
+                "level": {
+                  "type": "keyword"
+                },
+                "message": {
+                  "type": "text"
+                },
+                "request_id": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "web",
+        "flushPeriodMS": 5000,
+        "body": {
+          "template": "web-*",
+          "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0
+          },
+          "mappings": {
+            "trace": {
+              "properties": {
+                "service": {
+                  "type": "keyword"
+                },
+                "level": {
+                  "type": "keyword"
+                },
+                "request_id": {
+                  "type": "keyword"
+                },
+                "client_ip": {
+                  "type": "keyword"
+                },
+                "host": {
+                  "type": "keyword"
+                },
+                "path": {
+                  "type": "text"
+                },
+                "method": {
+                  "type": "keyword"
+                },
+                "request": {
+                  "type": "text"
+                },
+                "status_code": {
+                  "type": "keyword"
+                },
+                "response": {
+                  "type": "text"
+                },
+                "response_in_seconds": {
+                  "type": "double"
+                }
               }
             }
           }
         }
       }
-    },
-    {
-      "name": "web",
-      "bufferSizeKB": 5000,
-      "timerMS": 5000,
-      "body": {
-        "template": "web-*",
-        "settings": {
-          "number_of_shards": 1,
-          "number_of_replicas": 0
-        },
-        "mappings": {
-          "trace": {
-            "properties": {
-              "service": {
-                "type": "keyword"
-              },
-              "level": {
-                "type": "keyword"
-              },
-              "request_id": {
-                "type": "keyword"
-              },
-              "client_ip": {
-                "type": "keyword"
-              },
-              "host": {
-                "type": "keyword"
-              },
-              "path": {
-                "type": "text"
-              },
-              "method": {
-                "type": "keyword"
-              },
-              "request": {
-                "type": "text"
-              },
-              "status_code": {
-                "type": "keyword"
-              },
-              "response": {
-                "type": "text"
-              },
-              "response_in_seconds": {
-                "type": "double"
-              }
-            }
-          }
-        }
-      }
-    }
-  ]
+    ]
+  }
 }

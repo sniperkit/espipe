@@ -1,34 +1,35 @@
-package model
+package document
 
 import (
+	"bytes"
 	"encoding/json"
-	configuration "github.com/khezen/espipe/configuration"
-	util "github.com/khezen/espipe/util"
-	"github.com/khezen/espipe/uuid"
 	"time"
+
+	"github.com/khezen/espipe/template"
+	"github.com/khezen/espipe/uuid"
 )
 
 const (
 	anonymous = "anonymous"
 )
 
-// DocumentID is uuid for documents
-type DocumentID string
+// ID is uuid for documents
+type ID string
 
-// DocumentType is type for documents
-type DocumentType string
+// Type is type for documents
+type Type string
 
-// Document has a JSON body which must be indexed in given Template as given DocumentType.
+// Document has a JSON body which must be indexed in given Template as given Type.
 type Document struct {
-	Template  *configuration.Template
-	Type      DocumentType
-	ID        DocumentID
+	Template  *template.Template
+	Type      Type
+	ID        ID
 	Timestamp time.Time
 	Body      []byte
 }
 
 // NewDocument creates a document from es index, document type and its body
-func NewDocument(index *configuration.Template, docType DocumentType, body []byte) (*Document, error) {
+func NewDocument(index *template.Template, docType Type, body []byte) (*Document, error) {
 	id := uuid.New()
 	var bodyMap map[string]interface{}
 	err := json.Unmarshal(body, &bodyMap)
@@ -45,7 +46,7 @@ func NewDocument(index *configuration.Template, docType DocumentType, body []byt
 	return &Document{
 		index,
 		docType,
-		DocumentID(id),
+		ID(id),
 		t,
 		body,
 	}, nil
@@ -63,7 +64,7 @@ func (d *Document) Request() ([]byte, error) {
 
 	//{ "index" : { "_index" : "logs-2017.05.28", "_type" : "log", "_id" : "1" } }
 	docDescription := make(map[string]interface{})
-	docDescription["_index"] = util.RenderIndex(string(d.Template.Name), d.Timestamp)
+	docDescription["_index"] = RenderIndex(d.Template.Name, d.Timestamp)
 	docDescription["_type"] = d.Type
 	docDescription["_id"] = d.ID
 
@@ -76,4 +77,12 @@ func (d *Document) Request() ([]byte, error) {
 		return nil, err
 	}
 	return body, nil
+}
+
+// RenderIndex - logs: logs-2017.05.26
+func RenderIndex(templateName template.Name, t time.Time) string {
+	indexBuf := bytes.NewBufferString(string(templateName))
+	indexBuf.WriteString("-")
+	indexBuf.WriteString(t.Format("2006.01.02"))
+	return indexBuf.String()
 }

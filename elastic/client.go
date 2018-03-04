@@ -6,17 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
 	AWSSigner "github.com/aws/aws-sdk-go/aws/signer/v4"
 	"github.com/khezen/espipe/configuration"
-	"github.com/khezen/espipe/httpcli"
+	"github.com/khezen/espipe/template"
+	"github.com/khezen/espipe/transport"
 )
 
 var (
-	httpClient = httpcli.Singleton()
+	httpClient = transport.HTTPClient()
 	// ErrNotAcknowledged - creation request has been sent but not acknowledged by elasticsearh
 	ErrNotAcknowledged = errors.New("ErrNotAcknowledged - creation request has been sent but not acknowledged by elasticsearh")
 )
@@ -31,29 +31,24 @@ type Client struct {
 
 // NewClient returns a client for Elasticsearch API
 func NewClient(config *configuration.Configuration) *Client {
-
-	bufBulkEndP := bytes.NewBufferString(config.Elasticsearch)
-	bufBulkEndP.WriteString("/_bulk")
-	bufCreateTemplateEndP := bytes.NewBufferString(config.Elasticsearch)
-	bufCreateTemplateEndP.WriteString("/_template/")
-
+	bulkEndpoint := fmt.Sprintf("%s/_bulk", config.Elasticsearch.Address)
+	createTemplateEndpoint := fmt.Sprintf("%s/_template", config.Elasticsearch.Address)
 	var AWSSigner *AWSSigner.Signer
 	var basicAuthSigner *BasicAuthSigner
 	switch {
-	case config.AWSAuth != nil:
-		AWSSigner = NewAWSSigner(config.AWSAuth.AccessKeyID, config.AWSAuth.SecretAccessKey)
+	case config.Elasticsearch.AWSAuth != nil:
+		AWSSigner = NewAWSSigner(config.Elasticsearch.AWSAuth.AccessKeyID, config.Elasticsearch.AWSAuth.SecretAccessKey)
 		break
-	case config.BasicAuth != nil:
-		basicAuthSigner = NewBasicAuthSigner(config.BasicAuth.Username, config.BasicAuth.Password)
+	case config.Elasticsearch.BasicAuth != nil:
+		basicAuthSigner = NewBasicAuthSigner(config.Elasticsearch.BasicAuth.Username, config.Elasticsearch.BasicAuth.Password)
 		break
 	}
-
 	return &Client{
 		config,
 		AWSSigner,
 		basicAuthSigner,
-		bufBulkEndP.String(),
-		bufCreateTemplateEndP.String(),
+		bulkEndpoint,
+		createTemplateEndpoint,
 	}
 }
 
@@ -69,22 +64,16 @@ func (c *Client) Bulk(requestBody []byte) error {
 	if err != nil {
 		return err
 	}
-	res, err := httpClient.Do(req)
+	_, err = httpClient.Do(req)
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
-	resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("\n%s\n%s\n%s\n%s\n", time.Now(), c.bulkEndpoint, res.Status, bytes.NewBuffer(resBody).String())
 	return nil
 }
 
 // UpsertTemplate creates a template in Elasticsearch
-func (c *Client) UpsertTemplate(t *configuration.Template) error {
-	endpoint := c.renderTemplateURI(t)
+func (c *Client) UpsertTemplate(t *template.Template) error {
+	endpoint := fmt.Sprintf("%s/%s", c.templateEndpoint, t.Name)
 	requestBody, err := json.Marshal(t.Body)
 	if err != nil {
 		return err
@@ -110,17 +99,11 @@ func (c *Client) UpsertTemplate(t *configuration.Template) error {
 	return nil
 }
 
-func (c *Client) renderTemplateURI(t *configuration.Template) string {
-	bufEndpoint := bytes.NewBufferString(c.templateEndpoint)
-	bufEndpoint.WriteString(string(t.Name))
-	return bufEndpoint.String()
-}
-
 func (c *Client) sign(req *http.Request, bodyReader io.ReadSeeker) error {
 	var err error
 	switch {
 	case c.AWSSigner != nil:
-		_, err = c.AWSSigner.Sign(req, bodyReader, "es", c.config.AWSAuth.Region, time.Now())
+		_, err = c.AWSSigner.Sign(req, bodyReader, "es", c.config.Elasticsearch.AWSAuth.Region, time.Now())
 		break
 	case c.BasicAuthSigner != nil:
 		_, err = c.BasicAuthSigner.Sign(req)

@@ -8,60 +8,69 @@
 
 
 # Run
+
+## Docker
 `docker run -p 5000:5000 -v /etc/espipe:/etc/espipe khezen/espipe:6`
-## Supported tags and respective `Dockerfile` links
+### Supported tags and respective `Dockerfile` links
 * `6`, `latest`
  [(6/Dockerfile)](https://github.com/khezen/espipe/blob/6/Dockerfile)[![](https://images.microbadger.com/badges/image/khezen/espipe.svg)](https://hub.docker.com/r/khezen/espipe/)
-# Services
 
+# API
 Request|Response|Description
 ---|---|---
-POST /espipe/{template.name}/{documentType}  JSON body | 200 OK | indexes JSON body as `{documentType}` in Elasticsearch `{template.name}-yyyy.MM.dd`
+POST /espipe/{templateName}/{documentType}  JSON body | 200 OK | indexes JSON body as `{documentType}` in Elasticsearch `{template.name}-yyyy.MM.dd`
 GET /espipe/health | 200 OK | healthcheck
 
-# Configure
+# Config
 ```json
 {
-    "elasticsearch": "http://localhost:9200",
-    "templates": [{
-            "name": "logs",
-            "bufferSizeKB": 5000,
-            "timerMS": 5000,
-            "body": {...}
-        }
-    ]
+  "redis": {},
+  "elasticsearch": {}
 }
-
 ```
-## Configure templates
 
-* templates is an array of template configurations:
-  * *espipe* creates templates in elasticsearch if they do not exist yet
-  * an index template will automatically be applied when new indices are created
+## Redis
+Redis is disabled by default in which case buffer is stored in memory.
+```json
+  "redis": {
+    "enabled": true,
+    "address":"http://localhost:6379",
+    "password": "changeme",
+    "parition":0
+  }
+```
+
+## Elasticsearch
+```json
+  "elasticsearch": {
+    "address":"http://localhost:9200",
+    "templates": [{
+      "name": "logs",
+      "flushPeriodMS": 5000,
+      "body": {...}
+    }]
+  }
+```
+### templates
+  * *espipe* creates index templates in elasticsearch if they do not exist yet
   * for each template, *espipe* creates indices on daily basis
-    * **example:**
-      * template=logs-\*,
-      * indices=logs-2017.01.05, logs-2017.01.06, etc..
+    * template=logs-\*,
+    * indices=logs-2017.01.05, logs-2017.01.06, etc..
+  * For each index, *espipe* triggers bulk requests every `flushPeriodMS`
 
-
-* *espipe* indexes documents in bulk requests. For each index, *espipe* triggers bulk requests when:
-  * bulk size >= template.bufferSizeKB
-  * ticker event, period=template.timerMS
-
-### template.body
+#### template.body
 template.body takes the template **settings** and **mappings** with types definition.
 See the [Create Template API documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html).
 
 The mapping itself is flexible and is schema-free. New fields are automatically added to the type mapping definition when *espipe* indexes a new document. Check out the [mapping section](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) for more information on mapping definitions.
 
-## Security
-
 ### AWS Sign
 
 *espipe* supports AWS authentication for Amazon Elasticsearch Service
 ```json
-{
-  "elasticsearch": "https://host.eu-west-1.es.amazonaws.com",
+
+"elasticsearch": {
+  "address":"https://host.eu-west-1.es.amazonaws.com",
   "AWSAuth": {
     "accessKeyId": "changeme",
     "secretAccessKey": "changeme",
@@ -76,18 +85,16 @@ The mapping itself is flexible and is schema-free. New fields are automatically 
 *espipe* supports basic authentication for Elasticsearch (shield, search-guard)
 
 ```json
-{
-    "elasticsearch": "http://localhost:9200",
-    "basicAuth":{
-      "username": "elastic",
-      "password": "changeme"
-    },
-    "templates": [...]
+
+"elasticsearch": {
+  "address": "http://localhost:9200",
+  "basicAuth":{ 
+    "username": "elastic",
+    "password": "changeme"
+  },
+  "templates": [...]
 }
 ```
-
-
-
 
 ## Default config.json
 
