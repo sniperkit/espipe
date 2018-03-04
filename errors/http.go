@@ -11,12 +11,6 @@ var (
 	ErrWrongMethod = errors.New("ErrWrongMethod - The request http method does not match expectation")
 )
 
-// HTTPErr -
-type HTTPErr struct {
-	error
-	StatusCode int
-}
-
 // HTTPStatusCode -
 func HTTPStatusCode(err error) int {
 	switch err {

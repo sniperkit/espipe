@@ -1,0 +1,20 @@
+service: espipe
+
+provider:
+  name: aws
+  runtime: go1.x
+  region: eu-west-1
+
+package:
+ exclude:
+   - ./**
+ include:
+   - ./bin/**
+
+functions:
+  index:
+    handler: bin/index
+    events:
+      - http:
+          path: espipe
+          method: post
