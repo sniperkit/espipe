@@ -9,13 +9,16 @@ import (
 )
 
 func TestNewDocument(t *testing.T) {
-	configuration.Set("../configuration/testValidConfig.json")
+	configuration.Set("testResources/valid.json")
 	config, err := configuration.Get()
 	logTemplate := &config.Templates[0]
 	if err != nil {
 		panic(err)
 	}
-
+	valid, err := ioutil.ReadFile("testResources/valid.json")
+	if err != nil {
+		panic(err)
+	}
 	fullLog, err := ioutil.ReadFile("testResources/fullLog.json")
 	if err != nil {
 		panic(err)
@@ -46,6 +49,7 @@ func TestNewDocument(t *testing.T) {
 		body      []byte
 		expectErr bool
 	}{
+		{logTemplate, "log", valid, false},
 		{logTemplate, "log", fullLog, false},
 		{logTemplate, "log", missingServiceLog, false},
 		{logTemplate, "log", missngTimestampLog, false},
